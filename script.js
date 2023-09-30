@@ -5,6 +5,7 @@ const closeBtn = document.querySelector(".close-cart");
 const main = document.querySelector(".main");
 const cartContainer = document.querySelector(".cart-container");
 const quantity = document.querySelector(".quantity");
+const cartItemQauntity = document.querySelector(".cart-item");
 
 let products = [];
 let shoppingCart = JSON.parse(localStorage.getItem("shopping-cart")) || [];
@@ -40,9 +41,11 @@ fetchData();
 const generateProducts = (products) => {
   const data = products
     .map((product) => {
-      return ` <div class="col-4" onclick=addToCart(${product.id})>
-      <img src=${product.image} />
-      <h4>${product.title}</h4>
+      return ` <div class="col-4" onclick=addToCart(${product?.id})>
+      <img src=${product?.image} />
+      <span class="cart-info">
+      <span>
+      <h4>${product?.title}</h4>
       <div class="rating">
         <i class="fa fa-star"> </i>
         <i class="fa fa-star"> </i>
@@ -50,7 +53,11 @@ const generateProducts = (products) => {
         <i class="fa fa-star"> </i>
         <i class="fa fa-star-o"></i>
       </div>
-      <p>$50.00</p>
+      <p>$${product?.price}</p>
+      </span>
+
+      <button class="add-to-cart">Add TO Cart</button>
+     </span>
     </div>`;
     })
     .join(" ");
@@ -66,6 +73,7 @@ const addToCart = (id) => {
     let removeExistedProduct = shoppingCart.filter((item) => item.id !== id);
     shoppingCart = [...removeExistedProduct, existedProduct];
     localStorage.setItem("shopping-cart", JSON.stringify(shoppingCart));
+    showToast(false);
   } else {
     const newProduct = {
       id,
@@ -73,9 +81,12 @@ const addToCart = (id) => {
     };
     shoppingCart = [...shoppingCart, newProduct];
     localStorage.setItem("shopping-cart", JSON.stringify(shoppingCart));
+    showToast(true);
   }
 
   displayCart();
+  cartItems();
+  window.scrollTo({ top: 0, behavior: "smooth" });
 };
 
 const displayCart = () => {
@@ -181,10 +192,35 @@ const removeFromCart = (id) => {
   setIntoLcalStorage("shopping-cart", shoppingCart);
   displayCart();
   getTotalPrice();
+  cartItems();
 };
 
 const clearCart = () => {
   shoppingCart = [];
   localStorage.clear();
   displayCart();
+  cartItems();
 };
+
+const cartItems = () => {
+  cartItemQauntity.textContent = shoppingCart.length;
+};
+cartItems();
+
+//toast------
+function showToast(result) {
+  const toast = document.getElementById("toast");
+  if (result) {
+    toast.textContent = "Successfully Added Product";
+    toast.style.color = "#FFF";
+  } else {
+    toast.textContent = "You Already Added This In Cart";
+    toast.style.color = "#ff523b";
+  }
+
+  toast.style.opacity = "2";
+
+  setTimeout(() => {
+    toast.style.opacity = "0";
+  }, 2000); // Hide the toast after 3 seconds
+}

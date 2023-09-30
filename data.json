@@ -1,30 +1,50 @@
 [
   {
     "id": 1,
-    "title": "practice-title",
-    "rating": 4,
+    "title": "Red T-Shirt",
     "price": 50,
-    "image": "images/category-3.jpg"
+    "image": "images/product-1.jpg"
   },
   {
     "id": 2,
-    "title": "practice-title 2",
-    "rating": 4,
-    "price": 50,
-    "image": "images/category-3.jpg"
+    "title": "Black Shoes",
+    "price": 100,
+    "image": "images/product-2.jpg"
   },
   {
     "id": 3,
-    "title": "practice-title",
-    "rating": 4,
-    "price": 50,
-    "image": "images/category-3.jpg"
+    "title": "Black Pant",
+    "price": 150,
+    "image": "images/product-3.jpg"
   },
   {
     "id": 4,
-    "title": "practice-title",
-    "rating": 4,
+    "title": "Blue T-Shirt",
     "price": 50,
-    "image": "images/category-3.jpg"
+    "image": "images/product-4.jpg"
+  },
+  {
+    "id": 5,
+    "title": "Shoes",
+    "price": 50,
+    "image": "images/product-5.jpg"
+  },
+  {
+    "id": 6,
+    "title": "Black T-Shirt",
+    "price": 100,
+    "image": "images/product-6.jpg"
+  },
+  {
+    "id": 7,
+    "title": "Black ",
+    "price": 150,
+    "image": "images/product-7.jpg"
+  },
+  {
+    "id": 8,
+    "title": "Black Watch",
+    "price": 500,
+    "image": "images/product-8.jpg"
   }
 ]
