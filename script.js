@@ -79,8 +79,11 @@ const addToCart = (id) => {
 };
 
 const displayCart = () => {
-  console.log(shoppingCart);
-  const cartItems = shoppingCart
+  let cartItems;
+  if (!shoppingCart.length) {
+    return;
+  }
+  cartItems = shoppingCart
     .sort((a, b) => a.id - b.id)
     .map((item) => {
       const product = products.find((p) => p.id === item.id);
@@ -178,4 +181,10 @@ const removeFromCart = (id) => {
   setIntoLcalStorage("shopping-cart", shoppingCart);
   displayCart();
   getTotalPrice();
+};
+
+const clearCart = () => {
+  shoppingCart = [];
+  localStorage.clear();
+  displayCart();
 };

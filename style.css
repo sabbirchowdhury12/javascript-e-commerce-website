@@ -406,6 +406,13 @@ ul {
   right: 10px;
 }
 
+.empty-cart {
+  text-align: center;
+  margin-top: 20px;
+  color: #ff523b;
+  font-weight: bold;
+}
+
 /*media wuery for menu------600-------*/
 
 @media only screen and (max-width: 600px) {
