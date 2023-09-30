@@ -28,6 +28,7 @@ async function fetchData() {
 
     products = data;
     displayCart(); // I got my data here but
+    totalPrice();
     generateProducts(products);
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -78,30 +79,93 @@ const addToCart = (id) => {
 };
 
 const displayCart = () => {
-  const cartItems = shoppingCart.map((item) => {
-    const product = products.find((p) => p.id === item.id);
-    return `
+  const cartItems = shoppingCart
+    .sort((a, b) => a.id - b.id)
+    .map((item) => {
+      const product = products.find((p) => p.id === item.id);
+      return `
     <div class="item">
     <div class="item-header">
-      <img src="${product?.image}" alt="" />
+      <img src=${product?.image} alt="" />
       <span>
-        <span>"${product?.title}"</span>
-        <p>"${product?.price}"</p>
+        <span>${product?.title}</span>
+        <p>${product?.price}</p>
       </span>
     </div>
 
     <div class="upadte-qaunity">
       <span onclick=(addQuantity(${item.id}))>+</span>
       <span class="quantity">${item.quantity}</span>
-      <span onclick=(minusQuantity(${item.id})>-</span>
+      <span onclick=(minusQuantity(${item.id}))>-</span>
     </div>
 
-    <span class="price">100</span>
+    <span class="price">${product?.price * item?.quantity}</span>
   </div>
     `;
-  });
+    });
 
   cartContainer.innerHTML = cartItems.join(" ");
 };
 
 displayCart();
+
+const existedProduct = (id) => {
+  let product = shoppingCart.find((product) => product.id == id);
+  return product;
+};
+const removeExistedProduct = (id) => {
+  let products = shoppingCart.filter((product) => product.id !== id);
+  return products;
+};
+const setIntoLcalStorage = (name, data) => {
+  localStorage.setItem(name, JSON.stringify(data));
+};
+
+const addQuantity = (id) => {
+  let updatedProduct = existedProduct(id);
+
+  if (updatedProduct) {
+    updatedProduct.quantity = updatedProduct.quantity + 1;
+  }
+
+  quantity.innerHTML = updatedProduct.quantity;
+
+  const products = removeExistedProduct(id);
+
+  shoppingCart = [...products, updatedProduct];
+
+  setIntoLcalStorage("shopping-cart", shoppingCart);
+  displayCart();
+  totalPrice();
+};
+const minusQuantity = (id) => {
+  let updatedProduct = existedProduct(id);
+
+  if (updatedProduct.quantity < 2) {
+    return;
+  }
+  if (updatedProduct) {
+    updatedProduct.quantity = updatedProduct.quantity - 1;
+  }
+
+  const products = removeExistedProduct(id);
+
+  shoppingCart = [...products, updatedProduct];
+
+  setIntoLcalStorage("shopping-cart", shoppingCart);
+  displayCart();
+  totalPrice();
+};
+
+const totalPrice = () => {
+  const totalPriceField = document.querySelector(".totol-price");
+  const price = shoppingCart.map((cart) => {
+    const selectedProduct = products.filter((product) => product.id == cart.id);
+    const totalPrice = selectedProduct.map((p) => p.price * cart.quantity);
+    return totalPrice;
+  });
+
+  const totalPrice = price.reduce((a, b) => parseInt(a) + parseInt(b), 0);
+  totalPriceField.innerHTML = totalPrice;
+};
+totalPrice();

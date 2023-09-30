@@ -364,6 +364,10 @@ ul {
   padding: 0 5px;
   border-radius: 5px;
 }
+
+.upadte-qaunity span {
+  cursor: pointer;
+}
 .quantity {
   background: #fff;
   padding: 0 5px;
