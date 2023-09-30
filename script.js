@@ -1,27 +1,55 @@
-const productContainer = document.getElementById("product-container");
 const cartBtn = document.querySelector(".cart-btn");
 const cart = document.querySelector(".cart");
 const closeBtn = document.querySelector(".close-cart");
 const main = document.querySelector(".main");
 const cartContainer = document.querySelector(".cart-container");
-const quantity = document.querySelector(".quantity");
-const cartItemQauntity = document.querySelector(".cart-item");
 
+//initial value
 let products = [];
 let shoppingCart = JSON.parse(localStorage.getItem("shopping-cart")) || [];
 
+// OPEN CART
 cartBtn.onclick = () => {
   document.body.style.overflowX = "hidden";
   main.classList.add("active");
   cart.classList.add("active");
 };
 
+//CLOSE CART
 closeBtn.onclick = () => {
   document.body.style.overflow = "auto";
   main.classList.remove("active");
   cart.classList.remove("active");
 };
 
+//CALCULATE TOTAL PRICE
+const getTotalPrice = () => {
+  const totalPriceField = document.querySelector(".totol-price");
+  const price = shoppingCart.map((cart) => {
+    const selectedProduct = products.filter((product) => product.id == cart.id);
+    const totalPrice = selectedProduct.map((p) => p.price * cart.quantity);
+    return totalPrice;
+  });
+
+  const totalPrice = price.reduce((a, b) => parseInt(a) + parseInt(b), 0);
+  totalPriceField.innerHTML = totalPrice;
+};
+// FIND THE EXISTED PRODUCT
+const existedProduct = (id) => {
+  let product = shoppingCart.find((product) => product.id == id);
+  return product;
+};
+//FILTER PRODUCTS REMOVE EXISTED ONE
+const removeExistedProduct = (id) => {
+  let products = shoppingCart.filter((product) => product.id !== id);
+  return products;
+};
+
+// SET LOCAL STORAGE
+const setIntoLcalStorage = (data) => {
+  localStorage.setItem("shopping-cart", JSON.stringify(data));
+};
+//LOAD PRODUCTS DATA
 async function fetchData() {
   try {
     const response = await fetch("data.json");
@@ -35,10 +63,12 @@ async function fetchData() {
     console.error("Error fetching data:", error);
   }
 }
-
 fetchData();
 
+//DISPLAY PRODUCTS-------
 const generateProducts = (products) => {
+  const productContainer = document.getElementById("product-container");
+
   const data = products
     .map((product) => {
       return ` <div class="col-4" onclick=addToCart(${product?.id})>
@@ -64,15 +94,16 @@ const generateProducts = (products) => {
   productContainer.innerHTML = data;
 };
 
+//ADD TO CART A PRODUCT
 const addToCart = (id) => {
-  let existedProduct = shoppingCart.find((item) => item.id == id);
+  let existedProduct = shoppingCart.find((product) => product.id == id);
 
   if (existedProduct) {
     existedProduct.quantity = existedProduct.quantity + 1;
 
     let removeExistedProduct = shoppingCart.filter((item) => item.id !== id);
     shoppingCart = [...removeExistedProduct, existedProduct];
-    localStorage.setItem("shopping-cart", JSON.stringify(shoppingCart));
+    setIntoLcalStorage(shoppingCart);
     showToast(false);
   } else {
     const newProduct = {
@@ -80,7 +111,7 @@ const addToCart = (id) => {
       quantity: 1,
     };
     shoppingCart = [...shoppingCart, newProduct];
-    localStorage.setItem("shopping-cart", JSON.stringify(shoppingCart));
+    setIntoLcalStorage(shoppingCart);
     showToast(true);
   }
 
@@ -89,16 +120,18 @@ const addToCart = (id) => {
   window.scrollTo({ top: 0, behavior: "smooth" });
 };
 
-const displayCart = () => {
+//SHOW CART
+function displayCart() {
   let cartItems;
   if (!shoppingCart.length) {
-    return;
-  }
-  cartItems = shoppingCart
-    .sort((a, b) => a.id - b.id)
-    .map((item) => {
-      const product = products.find((p) => p.id === item.id);
-      return `
+    cartItems = `<p class="empty-cart">No Produts. Add a Products</p>`;
+    cartContainer.innerHTML = cartItems;
+  } else {
+    cartItems = shoppingCart
+      .sort((a, b) => a.id - b.id)
+      .map((item) => {
+        const product = products.find((p) => p.id === item.id);
+        return `
     <div class="item">
     <div class="item-header">
     <span class="cross-btn" onclick=(removeFromCart(${item.id}))>x</span>
@@ -118,38 +151,16 @@ const displayCart = () => {
     <span class="price">${product?.price * item?.quantity}</span>
   </div>
     `;
-    });
-
-  cartContainer.innerHTML = cartItems.join(" ");
+      });
+    cartContainer.innerHTML = cartItems.join(" ");
+  }
 
   getTotalPrice();
-};
-const getTotalPrice = () => {
-  const totalPriceField = document.querySelector(".totol-price");
-  const price = shoppingCart.map((cart) => {
-    const selectedProduct = products.filter((product) => product.id == cart.id);
-    const totalPrice = selectedProduct.map((p) => p.price * cart.quantity);
-    return totalPrice;
-  });
-
-  const totalPrice = price.reduce((a, b) => parseInt(a) + parseInt(b), 0);
-  totalPriceField.innerHTML = totalPrice;
-};
+}
 
 displayCart();
 
-const existedProduct = (id) => {
-  let product = shoppingCart.find((product) => product.id == id);
-  return product;
-};
-const removeExistedProduct = (id) => {
-  let products = shoppingCart.filter((product) => product.id !== id);
-  return products;
-};
-const setIntoLcalStorage = (name, data) => {
-  localStorage.setItem(name, JSON.stringify(data));
-};
-
+//ADD PRODUCT QUANTITY
 const addQuantity = (id) => {
   let updatedProduct = existedProduct(id);
 
@@ -157,16 +168,16 @@ const addQuantity = (id) => {
     updatedProduct.quantity = updatedProduct.quantity + 1;
   }
 
-  quantity.innerHTML = updatedProduct.quantity;
-
   const products = removeExistedProduct(id);
 
   shoppingCart = [...products, updatedProduct];
 
-  setIntoLcalStorage("shopping-cart", shoppingCart);
+  setIntoLcalStorage(shoppingCart);
   displayCart();
   getTotalPrice();
 };
+
+//MINUS PRODUCT QUANTITY
 const minusQuantity = (id) => {
   let updatedProduct = existedProduct(id);
 
@@ -181,30 +192,35 @@ const minusQuantity = (id) => {
 
   shoppingCart = [...products, updatedProduct];
 
-  setIntoLcalStorage("shopping-cart", shoppingCart);
+  setIntoLcalStorage(shoppingCart);
   displayCart();
   getTotalPrice();
 };
 
+//REMOVE A PRODUCT FROM CART
 const removeFromCart = (id) => {
   const filteredProducts = removeExistedProduct(id);
   shoppingCart = filteredProducts;
-  setIntoLcalStorage("shopping-cart", shoppingCart);
+  setIntoLcalStorage(shoppingCart);
   displayCart();
   getTotalPrice();
   cartItems();
 };
 
-const clearCart = () => {
+//CLEAR CART
+function clearCart() {
   shoppingCart = [];
   localStorage.clear();
-  displayCart();
+  displayCart(shoppingCart);
   cartItems();
-};
+}
 
+// cart item QUANTITY
 const cartItems = () => {
+  const cartItemQauntity = document.querySelector(".cart-item");
   cartItemQauntity.textContent = shoppingCart.length;
 };
+
 cartItems();
 
 //toast------
@@ -212,7 +228,7 @@ function showToast(result) {
   const toast = document.getElementById("toast");
   if (result) {
     toast.textContent = "Successfully Added Product";
-    toast.style.color = "#FFF";
+    toast.style.color = "#fff";
   } else {
     toast.textContent = "You Already Added This In Cart";
     toast.style.color = "#ff523b";

@@ -356,10 +356,11 @@ ul {
   right: -700px;
   top: 0;
   height: 100%;
-  width: 600px;
+  min-width: 600px;
   z-index: 200;
   padding: 10px;
   transition: 0.8s ease-in-out;
+  overflow: scroll;
 }
 
 .cart.active {
@@ -379,6 +380,7 @@ ul {
   align-items: center;
   justify-content: space-between;
   margin-top: 20px;
+  text-align: center;
 }
 
 .cart .item img {
@@ -486,5 +488,8 @@ ul {
     align-items: center;
     width: 50%;
     margin: 0 auto;
+  }
+  .cart {
+    min-width: 400px;
   }
 }
