@@ -27,8 +27,8 @@ async function fetchData() {
     const data = await response.json();
 
     products = data;
-    displayCart(); // I got my data here but
-    totalPrice();
+    displayCart();
+    getTotalPrice();
     generateProducts(products);
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -79,6 +79,7 @@ const addToCart = (id) => {
 };
 
 const displayCart = () => {
+  console.log(shoppingCart);
   const cartItems = shoppingCart
     .sort((a, b) => a.id - b.id)
     .map((item) => {
@@ -86,6 +87,7 @@ const displayCart = () => {
       return `
     <div class="item">
     <div class="item-header">
+    <span class="cross-btn" onclick=(removeFromCart(${item.id}))>x</span>
       <img src=${product?.image} alt="" />
       <span>
         <span>${product?.title}</span>
@@ -105,6 +107,19 @@ const displayCart = () => {
     });
 
   cartContainer.innerHTML = cartItems.join(" ");
+
+  getTotalPrice();
+};
+const getTotalPrice = () => {
+  const totalPriceField = document.querySelector(".totol-price");
+  const price = shoppingCart.map((cart) => {
+    const selectedProduct = products.filter((product) => product.id == cart.id);
+    const totalPrice = selectedProduct.map((p) => p.price * cart.quantity);
+    return totalPrice;
+  });
+
+  const totalPrice = price.reduce((a, b) => parseInt(a) + parseInt(b), 0);
+  totalPriceField.innerHTML = totalPrice;
 };
 
 displayCart();
@@ -136,7 +151,7 @@ const addQuantity = (id) => {
 
   setIntoLcalStorage("shopping-cart", shoppingCart);
   displayCart();
-  totalPrice();
+  getTotalPrice();
 };
 const minusQuantity = (id) => {
   let updatedProduct = existedProduct(id);
@@ -154,18 +169,13 @@ const minusQuantity = (id) => {
 
   setIntoLcalStorage("shopping-cart", shoppingCart);
   displayCart();
-  totalPrice();
+  getTotalPrice();
 };
 
-const totalPrice = () => {
-  const totalPriceField = document.querySelector(".totol-price");
-  const price = shoppingCart.map((cart) => {
-    const selectedProduct = products.filter((product) => product.id == cart.id);
-    const totalPrice = selectedProduct.map((p) => p.price * cart.quantity);
-    return totalPrice;
-  });
-
-  const totalPrice = price.reduce((a, b) => parseInt(a) + parseInt(b), 0);
-  totalPriceField.innerHTML = totalPrice;
+const removeFromCart = (id) => {
+  const filteredProducts = removeExistedProduct(id);
+  shoppingCart = filteredProducts;
+  setIntoLcalStorage("shopping-cart", shoppingCart);
+  displayCart();
+  getTotalPrice();
 };
-totalPrice();
