@@ -23,15 +23,15 @@
 
 
 
-<script id="tigsaw-script" tigsaw-id="V0EZ82YI">
+<script id="tigsaw-script" tigsaw-id="UV1EFZX1">
 (function(t,i,g,s,a,w){
   i=t.currentScript.getAttribute("tigsaw-id");
-  w.tigsawContainerId=i;
+  (w||window).tigsawContainerId=i;
   g=t.createElement('script');
   g.src='https://static.tigsaw.com/delivery/smartscript.js';
   g.defer=true;
   t.head.appendChild(g);
-})(document, null, null, null, null, window);
+})(document,typeof window!=='undefined'?window:this);
 </script>
 
 
@@ -324,3 +324,4 @@
     <script src="script.js"></script>
   </body>
 </html>
+
